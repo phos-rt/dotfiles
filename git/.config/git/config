@@ -1,0 +1,8 @@
+[init]
+	defaultBranch = main
+[user]
+	name = phos
+	email = me@phos.rip
+	signingkey = 525D93D4CB4F9ED9
+[commit]
+	gpgsign = true
