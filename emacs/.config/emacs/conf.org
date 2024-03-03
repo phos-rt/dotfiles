@@ -1,0 +1,426 @@
+#+OPTIONS: toc:2
+
+* Hotkeys
+
+Evil allows to use vim-like commands to interact with emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :config
+    (evil-mode t))
+#+END_SRC
+
+General is the use-package of keybindings, but I mostly use it to mimic vim's leader
+keys in emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package general
+    :ensure t
+    :config
+    (general-create-definer nf-main-leader-def :prefix ";"))
+
+  (nf-main-leader-def
+    :keymaps 'normal
+    "q"          #'kill-this-buffer
+    "pf"         #'projectile-find-file
+    "pp"         #'projectile-switch-project
+    "psp"        #'projectile-grep
+    "psr"        #'projectile-find-references
+    "Pr"         #'package-refresh-contents
+    "cfd"        #'lsp-find-definition
+    "cfr"        #'lsp-find-references
+    "cnb"        #'xref-go-back
+    "cnf"        #'xref-go-forward
+    "er"         '(lambda ()
+		    (interactive)
+		    (load-file (concat user-emacs-directory "init.el")))
+    "of"         #'org-roam-node-find
+    "oi"         #'org-roam-node-insert
+    "oc"         #'org-roam-capture)
+#+END_SRC
+
+which-key offers a menu of the existing keybindings after a particular input
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode)
+    (which-key-add-key-based-replacements
+      "; e"   "emacs"
+      "; er"  "reload configuration"
+      "; c"   "code"
+      "; cn"  "navigation"
+      "; cnb" "back"
+      "; cnf" "forward"
+      "; cf"  "find"
+      "; cfd" "find definition"
+      "; cfr" "find references"
+      "; p"   "project"
+      "; pf"  "find file"
+      "; pp"  "switch project"
+      "; ps"  "search"
+      "; psp" "find"
+      "; psr" "find references"
+      "; P"   "packages"
+      "; Pr"  "refresh registry"
+      "; o"   "org-roam"
+      "; of"  "find"
+      "; oi"  "insert"
+      "; oc"  "capture"
+      "; q"   "kill this buffer"))
+#+END_SRC
+
+* Defaults
+
+** Base
+
+Disable all the toolbars that come with emacs by default
+
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode   -1)
+  (menu-bar-mode   -1)
+  (scroll-bar-mode -1)
+
+  ;; disable the initial "GNU emacs" buffer
+  (setq inhibit-startup-screen t)
+#+END_SRC
+
+Disables the default bell from using both visual and sound cues
+
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell       nil
+	ring-bell-function #'ignore)
+#+END_SRC
+
+Display relative line numbers to the left of all buffers
+
+#+BEGIN_SRC emacs-lisp
+  (global-display-line-numbers-mode t)
+  (setq display-line-numbers 'relative)
+#+END_SRC
+
+Keybinds to move around panels.
+
+#+BEGIN_SRC emacs-lisp
+  ;; after org since org uses M-h and my keybind
+  ;; was being replaced.
+  (with-eval-after-load "org"
+    (global-set-key (kbd "M-h") #'windmove-left)
+    (global-set-key (kbd "M-j") #'windmove-down)
+    (global-set-key (kbd "M-k") #'windmove-up)
+    (global-set-key (kbd "M-l") #'windmove-right))
+#+END_SRC
+
+Tabbing stuff
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 2)
+#+END_SRC
+
+** Theme
+
+#+BEGIN_SRC emacs-lisp
+  (defcustom nf-theme-scheme 'dark
+    "color scheme to use when loading the UI theme")
+
+  (defcustom nf-theme-light-name 'ef-deuteranopia-light
+    "UI theme to use for the light scheme")
+
+  (defcustom nf-theme-dark-name 'ef-dark
+    "UI theme to use for the dark scheme")
+
+  (defun nf-switch-theme ()
+    (interactive)
+    (nf-toggle-theme-scheme)
+    (nf-set-theme))
+
+  (defun nf-toggle-theme-scheme ()
+    (if (eq nf-theme-scheme 'dark)
+	(customize-set-variable 'nf-theme-scheme 'light)
+      (customize-set-variable 'nf-theme-scheme 'dark)))
+
+  (defun nf-set-theme ()
+    (if (eq nf-theme-scheme 'dark)
+	(progn
+	  (disable-theme nf-theme-light-name)
+	  (load-theme    nf-theme-dark-name t))
+      (progn
+	(disable-theme nf-theme-dark-name)
+	(load-theme    nf-theme-light-name t))))
+
+  (use-package ef-themes
+    :ensure t
+    :config
+    (nf-set-theme))
+#+END_SRC
+
+** Font
+
+#+BEGIN_SRC emacs-lisp
+  (when-let* ((font (find-font (font-spec :name "HackNerdFont"))))
+    (set-frame-font font nil t)
+    (set-face-attribute 'default nil :height 110))
+
+  (use-package all-the-icons
+    :ensure t
+    :if (display-graphic-p))
+#+END_SRC
+
+** Modeline
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package doom-modeline
+  ;;   :ensure t
+  ;;   :hook (after-init . doom-modeline-mode)
+  ;;   :custom
+  ;;   (doom-modeline-height 35))
+
+  (use-package awesome-tray
+    :load-path "./lib/awesome-tray/"
+    :config
+    (awesome-tray-mode 1))
+
+  ;; Enable a little clock in the modeline
+  (display-time-mode)
+#+END_SRC
+
+** Completion System
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vertico
+    :ensure t
+    :init (vertico-mode))
+
+  (use-package marginalia
+    :ensure t
+    :init (marginalia-mode))
+
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
+
+  (use-package consult
+    :ensure t)
+
+  (use-package embark
+    :ensure t)
+
+  (use-package embark-consult
+    :ensure t
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+END_SRC
+
+* Langs
+
+** LSP
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :hook
+    ((typescript-ts-mode rust-mode go-ts-mode haskell-mode haskell-literate-mode) . lsp-deferred))
+
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (add-hook 'lsp-ui-doc-frame-mode-hook
+	      #'(lambda () (display-line-numbers-mode -1))))
+#+END_SRC
+
+** Go
+
+#+BEGIN_SRC emacs-lisp
+	(defun lsp-go-install-save-hooks ()
+		(add-hook 'before-save-hook #'lsp-format-buffer t t)
+		(add-hook 'before-save-hook #'lsp-organize-imports t t))
+
+	(use-package go-ts-mode
+		:ensure t
+		:mode "\\.go\\'"
+		:config
+		(add-hook 'go-ts-mode-hook #'lsp-go-install-save-hooks))
+#+END_SRC
+
+** Rust
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config (add-hook 'after-init-hook #'global-company-mode))
+
+  (use-package flycheck
+    :ensure t
+    :init
+    (setq rustic-treesitter-derive t)
+    :config
+    (add-hook 'after-init-hook #'global-flycheck-mode))
+
+  (use-package rustic
+    :ensure t
+    :config
+    (add-hook 'flycheck-mode-hook #'rustic-flycheck-setup))
+#+END_SRC
+
+** Haskell
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-haskell
+    :ensure t)
+#+END_SRC
+
+** Beancount
+
+#+BEGIN_SRC emacs-lisp
+  (use-package beancount
+    :load-path "./lib/beancount-mode/")
+#+END_SRC
+
+* Notes
+
+Generic org-mode customizations
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+#+END_SRC
+
+Set up org-roam as a replacement to obsidian, which acts as a
+connection of notes in circular fashion.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :config
+    (make-directory (concat (getenv "HOME") "/documents/sync/journal") t)
+    (setq org-roam-directory (file-truename (concat (getenv "HOME") "/documents/sync/journal")))
+    (org-roam-db-autosync-mode))
+
+  (use-package org-roam-ui
+    :after org-roam
+    :ensure t
+    :config
+    (setq org-roam-ui-sync-theme t
+	  org-roam-ui-follow t
+	  org-roam-ui-update-on-save t
+	  org-roam-ui-open-on-start t))
+#+END_SRC
+
+Add pomodoro mode similar to org-clock-in
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-pomodoro
+    :ensure t)
+#+END_SRC
+
+Set up org-agenda to manage tasks and schedules
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files '("~/documents/sync/agenda" "~/documents/sync/journal"))
+
+  (setq org-agenda-custom-commands
+	'(
+
+	  ("D" "block agenda"
+	   (
+
+	    (tags-todo "*"
+		       ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
+			(org-agenda-skip-function
+			 `(org-agenda-skip-entry-if
+			   'notregexp ,(format "\\[#%s\\]" (char-to-string org-priority-highest))))
+			(org-agenda-block-separator nil)
+			(org-agenda-overriding-header "Important tasks without a date\n")))
+
+	    (todo "WAIT"
+		  ((org-agenda-block-separator nil)
+		   (org-agenda-overriding-header "\nTasks on hold\n")))
+
+	    (agenda ""
+		    ((org-agenda-block-separator nil)
+		     (org-agenda-span 1)
+		     (org-deadline-warning-days 0)
+		     (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
+		     (org-agenda-overriding-header "\nDaily agenda\n")))
+
+	    (agenda ""
+		    ((org-agenda-block-separator nil)
+		     (org-agenda-start-day "+1d")
+		     (org-agenda-span 3)
+		     (org-deadline-warning-days 0)
+		     (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
+		     (org-agenda-skip-function `(org-agenda-skip-entry-if 'todo 'done))
+		     (org-agenda-overriding-header "\nNext three days\n")))))
+
+	  ))
+#+End_SRC
+
+* Others
+
+** Source code improvements
+
+*** Treesit
+
+#+BEGIN_SRC emacs-lisp
+  (use-package treesit-auto
+    :ensure t
+    :config
+    (global-treesit-auto-mode)
+    (setq treesit-auto-install 'prompt))
+#+END_SRC
+
+*** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode +1))
+#+END_SRC
+
+** Backups
+
+For the backups policy, let's configure it to store them at an specific
+directory and store different versions of the changes.
+
+As documented in emacswiki ([[https://www.emacswiki.org/emacs/AutoSave#toc7][here]]), only the focused buffer is saved by
+default, so with 'save-all' we are able to save all of them even if we
+switched from one to another before it was saved.
+
+#+BEGIN_SRC emacs-lisp
+  (setq
+   ; save every 20 characters
+   auto-save-interval 20
+   ; save after 15 seconds if stop typing
+   auto-save-timeout 15
+   ; copy files instead of renaming them
+   backup-by-copying t
+   ; newest backups to keep
+   kept-new-versions 10
+   ; oldest backups to keep, anything between the newest and oldest will
+   ; be deletec
+   kept-old-versions 10
+   ; don't ask before deleting backup files
+   delete-old-versions t
+   ; use version numbers for backups
+   version-control t
+   ; backup files even in a project with version-control
+   vc-make-backup-files t
+   ; where to store backups
+   backup-directory-alist `((".*" . "~/tmp/ebackup/")))
+
+  ; save the file directly instead of saving it in an #auto-save# file
+  (add-hook 'after-init-hook #'auto-save-visited-mode)
+
+  (defun save-all ()
+    "Save all the buffers silently."
+    (interactive)
+    (save-some-buffers t))
+
+  ; save them each time you change between buffers
+  (add-hook 'focus-out-hook #'save-all)
+#+END_SRC

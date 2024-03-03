@@ -1,0 +1,15 @@
+conf.el
+org-roam.db
+
+elpa/
+eln-cache/
+transient/
+tree-sitter/
+auto-save-list/
+
+tramp
+main.el
+recentf
+session.*
+projectile-bookmarks.eld
+
