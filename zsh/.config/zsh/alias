@@ -1,0 +1,5 @@
+# creates alias to navigate the directory stack
+# $ d               :: displays the directory stack
+# $ 1 | 2 | ... | 9 :: jumps to that entry on the directory stack
+alias d='dirs -v'
+for index ({1..9}) alias "$index"="cd +${index}"; unset index
