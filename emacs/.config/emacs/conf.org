@@ -11,65 +11,88 @@ Evil allows to use vim-like commands to interact with emacs
     (evil-mode t))
 #+END_SRC
 
+Treemacs is a file viewer similar to those of other IDEs, useful sometimes.
+
+#+BEGIN_SRC emacs-lisp
+	(use-package treemacs
+		:ensure t)
+
+	(use-package treemacs-evil
+		:after 'treemacs
+		:ensure t)
+
+	(use-package treemacs-projectile
+		:after 'treemacs
+		:ensure t)
+#+END_SRC
+
 General is the use-package of keybindings, but I mostly use it to mimic vim's leader
 keys in emacs.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package general
-    :ensure t
-    :config
-    (general-create-definer nf-main-leader-def :prefix ";"))
+	(use-package general
+		:ensure t
+		:config
+		(general-create-definer nf-main-leader-def :prefix ";"))
 
-  (nf-main-leader-def
-    :keymaps 'normal
-    "q"          #'kill-this-buffer
-    "pf"         #'projectile-find-file
-    "pp"         #'projectile-switch-project
-    "psp"        #'projectile-grep
-    "psr"        #'projectile-find-references
-    "Pr"         #'package-refresh-contents
-    "cfd"        #'lsp-find-definition
-    "cfr"        #'lsp-find-references
-    "cnb"        #'xref-go-back
-    "cnf"        #'xref-go-forward
-    "er"         '(lambda ()
-		    (interactive)
-		    (load-file (concat user-emacs-directory "init.el")))
-    "of"         #'org-roam-node-find
-    "oi"         #'org-roam-node-insert
-    "oc"         #'org-roam-capture)
+	(nf-main-leader-def
+		:keymaps 'normal
+		"q"          #'kill-this-buffer
+		"pf"         #'projectile-find-file
+		"pp"         #'projectile-switch-project
+		"psp"        #'projectile-grep
+		"psr"        #'projectile-find-references
+		"Pr"         #'package-refresh-contents
+		"ce"         #'lsp-execute-code-action
+		"cd"         #'lsp-ui-doc-glance
+		"cD"         #'lsp-describe-thing-at-point
+		"csd"        #'lsp-find-definition
+		"csr"        #'lsp-find-references
+		"csR"        #'lsp-rename
+		"cxb"        #'xref-go-back
+		"cxf"        #'xref-go-forward
+		"er"         '(lambda ()
+				(interactive)
+				(load-file (concat user-emacs-directory "init.el")))
+		"of"         #'org-roam-node-find
+		"oi"         #'org-roam-node-insert
+		"oc"         #'org-roam-capture)
 #+END_SRC
 
 which-key offers a menu of the existing keybindings after a particular input
 
 #+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t
-    :config
-    (which-key-mode)
-    (which-key-add-key-based-replacements
-      "; e"   "emacs"
-      "; er"  "reload configuration"
-      "; c"   "code"
-      "; cn"  "navigation"
-      "; cnb" "back"
-      "; cnf" "forward"
-      "; cf"  "find"
-      "; cfd" "find definition"
-      "; cfr" "find references"
-      "; p"   "project"
-      "; pf"  "find file"
-      "; pp"  "switch project"
-      "; ps"  "search"
-      "; psp" "find"
-      "; psr" "find references"
-      "; P"   "packages"
-      "; Pr"  "refresh registry"
-      "; o"   "org-roam"
-      "; of"  "find"
-      "; oi"  "insert"
-      "; oc"  "capture"
-      "; q"   "kill this buffer"))
+	(use-package which-key
+		:ensure t
+		:config
+		(which-key-mode)
+		(which-key-add-key-based-replacements
+			"; e"   "emacs"
+			"; er"  "reload configuration"
+			"; c"   "code"
+			"; ce"  "execute action"
+			"; cd"  "describe"
+			"; cD"  "describe better"
+			"; cx"  "navigation"
+			"; cxb" "back"
+			"; cxf" "forward"
+			"; cs"  "symbols"
+			"; csd" "find definition"
+			"; csr" "find references"
+			"; csR" "rename"
+			"; p"   "project"
+			"; pf"  "find file"
+			"; pp"  "switch project"
+			"; ps"  "search"
+			"; psp" "find"
+			"; psr" "find references"
+			"; P"   "packages"
+			"; Pr"  "refresh registry"
+			"; o"   "org-roam"
+			"; of"  "find"
+			"; oi"  "insert"
+			"; oc"  "capture"
+			"; q"   "kill this buffer"))
 #+END_SRC
 
 * Defaults
@@ -122,46 +145,45 @@ Tabbing stuff
 ** Theme
 
 #+BEGIN_SRC emacs-lisp
-  (defcustom nf-theme-scheme 'dark
-    "color scheme to use when loading the UI theme")
+	(defcustom nf-theme-scheme 'dark
+		"color scheme to use when loading the UI theme")
 
-  (defcustom nf-theme-light-name 'ef-deuteranopia-light
-    "UI theme to use for the light scheme")
+	(defcustom nf-theme-light-name 'ef-deuteranopia-light
+		"UI theme to use for the light scheme")
 
-  (defcustom nf-theme-dark-name 'ef-dark
-    "UI theme to use for the dark scheme")
+	(defcustom nf-theme-dark-name 'ef-dark
+		"UI theme to use for the dark scheme")
 
-  (defun nf-switch-theme ()
-    (interactive)
-    (nf-toggle-theme-scheme)
-    (nf-set-theme))
+	(defun nf-switch-theme ()
+		(interactive)
+		(nf-toggle-theme-scheme)
+		(nf-set-theme))
 
-  (defun nf-toggle-theme-scheme ()
-    (if (eq nf-theme-scheme 'dark)
+	(defun nf-toggle-theme-scheme ()
+		(if (eq nf-theme-scheme 'dark)
 	(customize-set-variable 'nf-theme-scheme 'light)
-      (customize-set-variable 'nf-theme-scheme 'dark)))
+			(customize-set-variable 'nf-theme-scheme 'dark)))
 
-  (defun nf-set-theme ()
-    (if (eq nf-theme-scheme 'dark)
+	(defun nf-set-theme ()
+		(if (eq nf-theme-scheme 'dark)
 	(progn
-	  (disable-theme nf-theme-light-name)
-	  (load-theme    nf-theme-dark-name t))
-      (progn
-	(disable-theme nf-theme-dark-name)
-	(load-theme    nf-theme-light-name t))))
+		(disable-theme nf-theme-light-name)
+		(load-theme    nf-theme-dark-name t))
+	(progn (disable-theme nf-theme-dark-name)
+				 (load-theme    nf-theme-light-name t))))
 
-  (use-package ef-themes
-    :ensure t
-    :config
-    (nf-set-theme))
+	(use-package ef-themes
+		:ensure t
+		:config
+		(nf-set-theme))
 #+END_SRC
 
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-  (when-let* ((font (find-font (font-spec :name "HackNerdFont"))))
+  (when-let* ((font (find-font (font-spec :name "Source Code Pro"))))
     (set-frame-font font nil t)
-    (set-face-attribute 'default nil :height 110))
+    (set-face-attribute 'default nil :height 110 :weight 'medium))
 
   (use-package all-the-icons
     :ensure t
@@ -177,10 +199,10 @@ Tabbing stuff
   ;;   :custom
   ;;   (doom-modeline-height 35))
 
-  (use-package awesome-tray
-    :load-path "./lib/awesome-tray/"
-    :config
-    (awesome-tray-mode 1))
+  ;; (use-package awesome-tray
+  ;;   :load-path "./lib/awesome-tray/"
+  ;;   :config
+  ;;   (awesome-tray-mode 1))
 
   ;; Enable a little clock in the modeline
   (display-time-mode)
@@ -215,55 +237,74 @@ Tabbing stuff
     (embark-collect-mode . consult-preview-at-point-mode))
 #+END_SRC
 
+** Transparency
+
+#+BEGIN_SRC emacs-lisp
+	(defun nf-toggle-window-transparency ()
+		"Toggle transparency."
+		(interactive)
+		(let ((alpha-transparency 50))
+			(pcase (frame-parameter nil 'alpha-background)
+				(alpha-transparency (set-frame-parameter nil 'alpha-background 100))
+				(t (set-frame-parameter nil 'alpha-background alpha-transparency)))))
+#+END_SRC
+
 * Langs
 
 ** LSP
 
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :ensure t
-    :hook
-    ((typescript-ts-mode rust-mode go-ts-mode haskell-mode haskell-literate-mode) . lsp-deferred))
+	(use-package lsp-mode
+		:ensure t
+		:hook
+		((typescript-ts-mode rust-mode go-ts-mode haskell-mode
+			haskell-literate-mode c-ts-mode c++-ts-mode terraform-mode) . lsp-deferred)
+		:config
+		(setq lsp-log-io nil)
+		(setq gc-cons-threshold 100000000)
+		(setq read-process-output-max (* 1024 1024)) ;; 1 mb
+		(setq lsp-auto-execute-action nil))
 
-  (use-package lsp-ui
-    :ensure t
-    :config
-    (add-hook 'lsp-ui-doc-frame-mode-hook
-	      #'(lambda () (display-line-numbers-mode -1))))
+	(use-package lsp-ui
+		:ensure t
+		:config
+		(add-hook 'lsp-ui-doc-frame-mode-hook
+				#'(lambda () (display-line-numbers-mode -1))))
+
+	(defun lsp-pre-save-hooks ()
+		(add-hook 'before-save-hook #'lsp-format-buffer t t)
+		(add-hook 'before-save-hook #'lsp-organize-imports t t))
 #+END_SRC
 
 ** Go
 
 #+BEGIN_SRC emacs-lisp
-	(defun lsp-go-install-save-hooks ()
-		(add-hook 'before-save-hook #'lsp-format-buffer t t)
-		(add-hook 'before-save-hook #'lsp-organize-imports t t))
-
 	(use-package go-ts-mode
 		:ensure t
 		:mode "\\.go\\'"
 		:config
-		(add-hook 'go-ts-mode-hook #'lsp-go-install-save-hooks))
+		(add-hook 'go-ts-mode-hook #'lsp-pre-save-hooks))
 #+END_SRC
 
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :config (add-hook 'after-init-hook #'global-company-mode))
+	(use-package company
+		:ensure t
+		:config (add-hook 'after-init-hook #'global-company-mode))
 
-  (use-package flycheck
-    :ensure t
-    :init
-    (setq rustic-treesitter-derive t)
-    :config
-    (add-hook 'after-init-hook #'global-flycheck-mode))
+	(use-package flycheck
+		:ensure t
+		:init
+		(setq rustic-treesitter-derive t)
+		:config
+		(add-hook 'after-init-hook #'global-flycheck-mode))
 
-  (use-package rustic
-    :ensure t
-    :config
-    (add-hook 'flycheck-mode-hook #'rustic-flycheck-setup))
+	(use-package rustic
+		:ensure t
+		:config
+		(add-hook 'rustic-mode-hook #'lsp-pre-save-hooks)
+		(add-hook 'flycheck-mode-hook #'rustic-flycheck-setup))
 #+END_SRC
 
 ** Haskell
@@ -278,6 +319,22 @@ Tabbing stuff
 #+BEGIN_SRC emacs-lisp
   (use-package beancount
     :load-path "./lib/beancount-mode/")
+#+END_SRC
+
+** Typescript
+
+#+BEGIN_SRC emacs-lisp
+	(use-package typescript-ts-mode
+		:after lsp-mode
+		:mode ("\.ts$")
+		:hook (typescript-ts-mode . lsp-deferred))
+#+END_SRC
+
+** Terraform
+
+#+BEGIN_SRC emacs-lisp
+	(use-package terraform-mode
+		:ensure t)
 #+END_SRC
 
 * Notes
