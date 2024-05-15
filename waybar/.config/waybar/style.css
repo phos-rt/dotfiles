@@ -6,9 +6,9 @@
 }
 
 window#waybar {
-    background-color: #f3e500; /* #f2eb9d; */
+    background-color: #f2eb85; /* #f3e500; */ /* #f2eb9d; */
     border-bottom: 3px solid rgba(0, 0, 0, 1);
-    color: #000000;
+    color: #000;
     transition-property: background-color;
     transition-duration: .5s;
 }
