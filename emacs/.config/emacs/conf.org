@@ -5,10 +5,10 @@
 Evil allows to use vim-like commands to interact with emacs
 
 #+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :ensure t
-    :config
-    (evil-mode t))
+	(use-package evil
+		:ensure t
+		:config
+		(evil-mode t))
 #+END_SRC
 
 Treemacs is a file viewer similar to those of other IDEs, useful sometimes.
@@ -120,8 +120,8 @@ Disables the default bell from using both visual and sound cues
 Display relative line numbers to the left of all buffers
 
 #+BEGIN_SRC emacs-lisp
-  (global-display-line-numbers-mode t)
-  (setq display-line-numbers 'relative)
+	(global-display-line-numbers-mode t)
+	(setq display-line-numbers-type 'relative)
 #+END_SRC
 
 Keybinds to move around panels.
@@ -211,30 +211,36 @@ Tabbing stuff
 ** Completion System
 
 #+BEGIN_SRC emacs-lisp
-  (use-package vertico
-    :ensure t
-    :init (vertico-mode))
+	(use-package vertico
+		:ensure t
+		:init (vertico-mode))
 
-  (use-package marginalia
-    :ensure t
-    :init (marginalia-mode))
+	(use-package marginalia
+		:ensure t
+		:init (marginalia-mode))
 
-  (use-package orderless
-    :ensure t
-    :custom
-    (completion-styles '(orderless basic))
-    (completion-category-overrides '((file (styles basic partial-completion)))))
+	(use-package orderless
+		:ensure t
+		:custom
+		(completion-styles '(orderless basic))
+		(completion-category-overrides '((file (styles basic partial-completion)))))
 
-  (use-package consult
-    :ensure t)
+	(use-package consult
+		:ensure t)
 
-  (use-package embark
-    :ensure t)
+	(use-package embark
+		:ensure t)
 
-  (use-package embark-consult
-    :ensure t
-    :hook
-    (embark-collect-mode . consult-preview-at-point-mode))
+	(use-package embark-consult
+		:ensure t
+		:hook
+		(embark-collect-mode . consult-preview-at-point-mode))
+
+	(use-package yasnippet
+		:ensure t
+		:config
+		(setq yas-snippet-dirs (list (expand-file-name (concat user-emacs-directory "snippets"))))
+		(yas-global-mode))
 #+END_SRC
 
 ** Transparency
@@ -279,6 +285,12 @@ Tabbing stuff
 ** Go
 
 #+BEGIN_SRC emacs-lisp
+	(use-package go-mode
+		:ensure t
+		:mode "\\.go\\'"
+		:config
+		(add-hook 'go-mode-hook #'lsp-pre-save-hooks))
+
 	(use-package go-ts-mode
 		:ensure t
 		:mode "\\.go\\'"
@@ -291,7 +303,11 @@ Tabbing stuff
 #+BEGIN_SRC emacs-lisp
 	(use-package company
 		:ensure t
-		:config (add-hook 'after-init-hook #'global-company-mode))
+		:bind (:map company-active-map
+								("<tab>" . #'company-complete-common-or-cycle)
+								("S-<iso-lefttab>" . (lambda () (interactive) (company-complete-common-or-cycle -1))))
+		:config
+		(add-hook 'after-init-hook #'global-company-mode))
 
 	(use-package flycheck
 		:ensure t
@@ -312,6 +328,18 @@ Tabbing stuff
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-haskell
     :ensure t)
+#+END_SRC
+
+** OCaml
+
+#+BEGIN_SRC emacs-lisp
+	(use-package tuareg
+		:ensure t)
+
+	(use-package ocamlformat
+		:ensure t
+		:custom (ocamlformat-enable 'enable-outside-detected-project)
+		:hook (before-save . ocamlformat-before-save))
 #+END_SRC
 
 ** Beancount
@@ -353,8 +381,8 @@ connection of notes in circular fashion.
   (use-package org-roam
     :ensure t
     :config
-    (make-directory (concat (getenv "HOME") "/documents/sync/journal") t)
-    (setq org-roam-directory (file-truename (concat (getenv "HOME") "/documents/sync/journal")))
+    (make-directory (concat (getenv "HOME") "/cloud/secrets/records") t)
+    (setq org-roam-directory (file-truename (concat (getenv "HOME") "/cloud/secrets/records")))
     (org-roam-db-autosync-mode))
 
   (use-package org-roam-ui
@@ -377,7 +405,7 @@ Add pomodoro mode similar to org-clock-in
 Set up org-agenda to manage tasks and schedules
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/documents/sync/agenda" "~/documents/sync/journal"))
+  (setq org-agenda-files '("~/cloud/secrets/journal"))
 
   (setq org-agenda-custom-commands
 	'(
@@ -423,11 +451,11 @@ Set up org-agenda to manage tasks and schedules
 *** Treesit
 
 #+BEGIN_SRC emacs-lisp
-  (use-package treesit-auto
-    :ensure t
-    :config
-    (global-treesit-auto-mode)
-    (setq treesit-auto-install 'prompt))
+	(use-package treesit-auto
+		:ensure t
+		:config
+		(global-treesit-auto-mode)
+		(setq treesit-auto-install 'prompt))
 #+END_SRC
 
 *** Projectile
@@ -437,6 +465,25 @@ Set up org-agenda to manage tasks and schedules
     :ensure t
     :config
     (projectile-mode +1))
+#+END_SRC
+
+** RSS feed
+
+#+BEGIN_SRC emacs-lisp
+	(use-package elfeed
+		:ensure t
+		:config
+		(setq elfeed-feeds
+					'(("https://www.youtube.com/feeds/videos.xml?channel_id=UCf93u-RFP3nitjOL-30kp1w" videos)
+						"https://xeiaso.net/blog.rss"
+						"https://deprogrammaticaipsum.com/rss"
+						"https://lwn.net/headlines/rss"
+						"https://hnrss.org/frontpage"
+						("https://github.com/beancount/beancount/tags.atom" pkg)
+						("https://github.com/hashicorp/terraform-ls/releases.atom" pkg)
+						("https://github.com/acmesh-official/acme.sh/releases.atom" pkg)
+						("https://github.com/bugaevc/wl-clipboard.atom" pkg)
+						("https://github.com/golang/tools/releases.toml" pkg))))
 #+END_SRC
 
 ** Backups
