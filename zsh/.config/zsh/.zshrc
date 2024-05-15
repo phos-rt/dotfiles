@@ -15,19 +15,6 @@ setopt AUTO_PUSHD        # push the current dir to the stack
 setopt PUSHD_IGNORE_DUPS # ignore duplicates
 setopt PUSHD_SILENT      # dont print directory on pushd and popd
 
-# zellij autostart on shell creation
-if [[ -z "$ZELLIJ" ]]; then
-    if [[ "$ZELLIJ_AUTO_ATTACH" == "true" ]]; then
-        zellij attach -c
-    else
-        zellij
-    fi
-
-    if [[ "$ZELLIJ_AUTO_EXIT" == "true" ]]; then
-        exit
-    fi
-fi
-
 # set up gpg agent
 export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -39,3 +26,6 @@ if [[ -d "$ZDOTDIR" ]]; then
     source "$file"
   done
 fi
+
+# opam configuration
+[[ ! -r /home/phos/.opam/opam-init/init.zsh ]] || source /home/phos/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
