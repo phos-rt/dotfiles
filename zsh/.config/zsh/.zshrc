@@ -6,7 +6,8 @@ source "$ZDOTDIR"/alias
 bindkey '^R' history-incremental-search-backward
 
 # completion system... it ain't working yet
-autoload -U compinit; compinit
+autoload -U compinit prompinit; compinit
+prompinit; prompt gentoo
 
 # prompt
 autoload -Uz prompt_purification_setup; prompt_purification_setup

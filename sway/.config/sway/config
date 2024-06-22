@@ -23,13 +23,13 @@ set $term foot
 set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
 
 ### background configuration
-output * bg ~/pictures/wallpaper.png fill
+#output * bg ~/pictures/wallpaper.jpg fill
 
 # start pipewire
-exec pipewire
+exec gentoo-pipewire-launcher &
 
 # start waybar
-exec waybar
+exec waybar &
 
 #
 # Example configuration:
