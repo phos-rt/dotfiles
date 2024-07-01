@@ -7,7 +7,7 @@ export HISTSIZE=10000                # maximum events for internal history
 export SAVEHIST=10000                # maximum events in history file
 
 # configure path for local binaries
-export PATH="$HOME/opt/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # configure default editors
 export EDITOR=nvim
