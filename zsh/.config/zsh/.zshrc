@@ -6,8 +6,14 @@ source "$ZDOTDIR"/alias
 bindkey '^R' history-incremental-search-backward
 
 # completion system... it ain't working yet
-autoload -U compinit prompinit; compinit
-prompinit; prompt gentoo
+autoload -U compinit; compinit
+
+# TODO(phos): on gentoo this should run but not on void,
+# could do that by hostname I guess
+if false; then
+	autoload -U promptinit
+	prompinit; prompt gentoo
+fi
 
 # prompt
 autoload -Uz prompt_purification_setup; prompt_purification_setup
@@ -30,3 +36,8 @@ fi
 
 # opam configuration
 [[ ! -r /home/phos/.opam/opam-init/init.zsh ]] || source /home/phos/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
+
+# vim mode
+bindkey -v
+bindkey ^R history-incremental-search-backward
+bindkey ^S history-incremental-search-forward

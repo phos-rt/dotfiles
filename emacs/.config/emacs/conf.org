@@ -263,7 +263,7 @@ Tabbing stuff
 	(use-package lsp-mode
 		:ensure t
 		:hook
-		((typescript-ts-mode rust-mode go-ts-mode haskell-mode
+		((typescript-ts-mode rust-mode go-mode haskell-mode
 			haskell-literate-mode c-ts-mode c++-ts-mode terraform-mode) . lsp-deferred)
 		:config
 		(setq lsp-log-io nil)
@@ -280,6 +280,17 @@ Tabbing stuff
 	(defun lsp-pre-save-hooks ()
 		(add-hook 'before-save-hook #'lsp-format-buffer t t)
 		(add-hook 'before-save-hook #'lsp-organize-imports t t))
+
+	(add-hook 'c-ts-mode-hook #'lsp-pre-save-hooks)
+#+END_SRC
+
+** C
+
+#+BEGIN_SRC emacs-lisp
+	(setq
+	 indent-tabs-mode nil
+	 c-default-style "linux"
+	 c-basic-offset 4)
 #+END_SRC
 
 ** Go
@@ -291,11 +302,11 @@ Tabbing stuff
 		:config
 		(add-hook 'go-mode-hook #'lsp-pre-save-hooks))
 
-	(use-package go-ts-mode
-		:ensure t
-		:mode "\\.go\\'"
-		:config
-		(add-hook 'go-ts-mode-hook #'lsp-pre-save-hooks))
+	;;(use-package go-ts-mode
+	;;	:ensure t
+	;;	:mode "\\.go\\'"
+	;;	:config
+	;;	(add-hook 'go-ts-mode-hook #'lsp-pre-save-hooks))
 #+END_SRC
 
 ** Rust
@@ -467,6 +478,15 @@ Set up org-agenda to manage tasks and schedules
     (projectile-mode +1))
 #+END_SRC
 
+*** Highlight TODO comments
+
+#+BEGIN_SRC emacs-lisp
+	(use-package fic-mode
+		:load-path "./lib/fic-mode/"
+		:config
+		(fic-mode 1))
+#+END_SRC
+
 ** RSS feed
 
 #+BEGIN_SRC emacs-lisp
@@ -483,7 +503,8 @@ Set up org-agenda to manage tasks and schedules
 						("https://github.com/hashicorp/terraform-ls/releases.atom" pkg)
 						("https://github.com/acmesh-official/acme.sh/releases.atom" pkg)
 						("https://github.com/bugaevc/wl-clipboard.atom" pkg)
-						("https://github.com/golang/tools/releases.toml" pkg))))
+						("https://github.com/golang/tools/releases.toml" pkg)
+						("https://github.com/AmatCoder/mednaffe/releases.toml" pkg))))
 #+END_SRC
 
 ** Backups
