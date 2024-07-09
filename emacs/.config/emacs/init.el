@@ -26,7 +26,7 @@
  '(lsp-ui-doc-show-with-mouse nil)
  '(nf-theme-dark-name 'ef-dark)
  '(package-selected-packages
-	 '(yasnippet ocamlformat tuareg elfeed terraform-mode treemacs-projectile treemacs-evil treemacs consult projectile go-mode lsp-ui lsp-haskell awesome-tray org-pomodoro treesit-auto org-roam-ui all-the-icons doom-modeline general org-roam lsp-mode rustic flycheck company kaolin-themes evil)))
+	 '(dap-gdb-lldb yasnippet ocamlformat tuareg elfeed terraform-mode treemacs-projectile treemacs-evil treemacs consult projectile go-mode lsp-ui lsp-haskell awesome-tray org-pomodoro treesit-auto org-roam-ui all-the-icons doom-modeline general org-roam lsp-mode rustic flycheck company kaolin-themes evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

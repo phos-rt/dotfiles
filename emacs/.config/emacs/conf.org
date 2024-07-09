@@ -38,6 +38,8 @@ keys in emacs.
 	(nf-main-leader-def
 		:keymaps 'normal
 		"q"          #'kill-this-buffer
+		"pc"         #'projectile-compile-project
+		"pr"         #'projectile-run-project
 		"pf"         #'projectile-find-file
 		"pp"         #'projectile-switch-project
 		"psp"        #'projectile-grep
@@ -81,6 +83,8 @@ which-key offers a menu of the existing keybindings after a particular input
 			"; csr" "find references"
 			"; csR" "rename"
 			"; p"   "project"
+			"; pc"  "compile"
+			"; pr"  "run"
 			"; pf"  "find file"
 			"; pp"  "switch project"
 			"; ps"  "search"
@@ -284,6 +288,13 @@ Tabbing stuff
 	(add-hook 'c-ts-mode-hook #'lsp-pre-save-hooks)
 #+END_SRC
 
+** Debugging
+
+#+BEGIN_SRC emacs-lisp
+	(use-package dap-mode
+		:ensure t)
+#+END_SRC
+
 ** C
 
 #+BEGIN_SRC emacs-lisp
@@ -469,13 +480,19 @@ Set up org-agenda to manage tasks and schedules
 		(setq treesit-auto-install 'prompt))
 #+END_SRC
 
-*** Projectile
+*** COMMENT Projectile
 
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :config
-    (projectile-mode +1))
+	(use-package projectile
+		:ensure t
+		:config
+		(projectile-mode +1))
+
+	;; sets compile-command as buffer local var so it can be set via .dir-locals
+	(make-variable-buffer-local 'compile-command)
+
+	;; stops risky variable popups from asking all the fucking time
+	;; (advice-add 'risky-local-variable-p :override #'ignore)
 #+END_SRC
 
 *** Highlight TODO comments
