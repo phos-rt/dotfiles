@@ -1,0 +1,41 @@
+;; -*- mode: lisp -*-
+
+(defcfg)
+
+(defvar
+   ms-tap  100
+   ms-hold 250)
+
+(defsrc
+   `    1   2   3   4   5   6   7   8   9   0   -   =
+   tab  q   w   e   r   t   y   u   i   o   p   [   ]
+   caps a   s   d   f   g   h   j   k   l   ;   '   \   ret
+   lsft <   z   x   c   v   b   n   m   ,   .   /       rsft
+   lctl                      spc                        rctl)
+
+(defalias
+  cap (tap-hold $ms-tap $ms-hold esc lctrl)
+  rmd (layer-while-held shiftmod)
+  lmd (layer-while-held shiftmod)
+  ttt (layer-while-held shifttabmode))
+
+(deflayer base
+  _     S-1 [   S-[ S-9 S-7 =   S-0 S-] ]   S-8 S-4 S-\
+  _     _   _   _   _   _   _   _   _   _   _   -   +
+  @cap  _   _   _   _   _   _   _   _   _   ;   '   S-2 _
+  @lmd  S-, _   _   _   _   _   _   _   ,   .   /       @rmd
+  _                            _                        _)
+
+(deflayer shiftmod
+  S-6   1   2   3   4   5   6   7   8   9   0   S-5 \
+  @ttt  S-q S-w S-e S-r S-t S-y S-u S-i S-o S-p S-- S-`
+  _     S-a S-s S-d S-f S-g S-h S-j S-k S-l S-; S-' S-3 S-ret
+  _     S-. S-z S-x S-c S-v S-b S-n S-m S-, S-. S-/     _
+  _                          _                          _)
+
+(deflayer shifttabmode
+  _     _   _   _   _   _   _      _      _     _       _   _   _
+  _     _   _   _   _   _   _      _      _     _       _   _   _
+  _     _   _   _   _   _   S-left S-down S-up  S-right _   _   _   _
+  _     _   _   _   _   _   _      _      _     _       _   _       _
+  _                                _                                _)

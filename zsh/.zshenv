@@ -12,3 +12,4 @@ export PATH="$HOME/.local/bin:$PATH"
 # configure default editors
 export EDITOR=nvim
 export VISUAL=nvim
+. "$HOME/.cargo/env"
